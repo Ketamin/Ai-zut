@@ -16,12 +16,15 @@ class Todo {
 
   addTask(taskTitle, taskDate) {
     // Find task with greatest id
-    const greatestIdTask = this.tasks.reduce((prev, current) =>
-      prev.id > current.id ? prev : current
+    const greatestIdTask = this.tasks.reduce(
+      (prev, current) => (prev.id > current.id ? prev : current),
+      {}
     )
 
+    const shouldUseGreatestTask = Object.keys(greatestIdTask).length > 0
+
     const task = {
-      id: greatestIdTask ? greatestIdTask.id + 1 : 0,
+      id: shouldUseGreatestTask ? greatestIdTask.id + 1 : 0,
       task: taskTitle,
       done: false,
       date: taskDate,
@@ -66,6 +69,7 @@ class Todo {
   }
 
   editTask(index, newTitle, newDate) {
+    console.log(index)
     if (newTitle.length < 3) {
       alert('Task title has to be longer than 3 characters')
       return false
@@ -94,6 +98,7 @@ class Todo {
       taskTitle.innerHTML = titleText
 
       if (searchText.length < 2) {
+        this.draw()
         return
       }
 
@@ -103,6 +108,10 @@ class Todo {
           `<mark>${searchText}</mark>`
         )
         taskTitle.innerHTML = markedTitle
+
+        // We should filter out tasks that are not matched
+        this.tasks = this.tasks.filter((task) => task.task.includes(searchText))
+        this.draw()
       }
     })
   }
@@ -216,7 +225,7 @@ class Todo {
               const currentInputDate = document.querySelector(
                 `[data-id="${task.id}"] .editing_input_date`
               )
-
+              console.log(task)
               if (
                 this.editTask(
                   task.id,
