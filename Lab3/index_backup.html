@@ -10,14 +10,13 @@
   <script src="leaflet-1.7.1/leaflet-image.js"></script>
   <style>
     #map {
-      width: 300px;
-      height: 300px;
+      width: 100%;
+      height: 50vh;
       border: 1px solid black;
     }
 
     #rasterMap {
-      width: 300px;
-      height: 300px;
+      height: 360px;
       border: 1px solid black;
     }
 
@@ -31,69 +30,103 @@
     }
 
     #puzzleTable {
-      grid-template-columns: repeat(8, 75px);
-      grid-template-rows: repeat(2, 75px);
+      grid-template-columns: repeat(8, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      border: 1px solid #303030;
+      width: 100%;
+      min-height: 10vh;
     }
 
     #dropArea {
-      grid-template-columns: repeat(4, 75px);
-      grid-template-rows: repeat(4, 75px);
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      min-width: 50vw;
+      min-height: 49vh;
+      border: 1px solid #303030;
     }
 
     .puzzlePiece,
     .dropSpot {
-      width: 75px;
-      height: 75px;
+      height: 12.4vh;
       border: 1px solid black;
+      box-sizing: border-box;
+    }
+
+    .puzzlePiece {
+      border: none;
+    }
+
+    .dropSpot canvas {
+      border: none;
+      width: 100%;
+      height: 100%;
     }
 
     .dropSpot {
       background-color: lightgray;
     }
 
-    .dropSpot img {
-      width: 75px;
-      height: 75px;
-      border: none;
-      /* Usunięcie bordera */
+    body {
+      display: flex;
+      flex-direction: column;
+      width: 100vw;
+    }
+
+    .left-container {
+      width: 50vw;
+    }
+
+    .right-container {
+      width: 50vw;
+    }
+
+    .top {
+      display: flex;
+    }
+
+    .bottom {
+      display: flex;
     }
   </style>
 </head>
 
 <body>
-  <div id="map"></div>
-  <button id="getLocation">Get Current Location</button>
-  <button id="saveButton">Save Raster Map</button>
-  <br>
-  <canvas id="rasterMap"></canvas>
-  <div id="puzzleTable"></div>
-  <div id="dropArea">
-    <!-- This creates a 4x4 grid of drop spots -->
-    <!-- Dodajemy atrybut data-occupied, który będzie modyfikowany w JavaScript -->
-
-    <!-- TODO: remove data-x data-y -->
-    <div class="dropSpot" data-x="0" data-y="0" data-occupied="false"></div>
-    <div class="dropSpot" data-x="1" data-y="0" data-occupied="false"></div>
-    <div class="dropSpot" data-x="2" data-y="0" data-occupied="false"></div>
-    <div class="dropSpot" data-x="3" data-y="0" data-occupied="false"></div>
-    <div class="dropSpot" data-x="0" data-y="1" data-occupied="false"></div>
-    <div class="dropSpot" data-x="0" data-y="2" data-occupied="false"></div>
-    <div class="dropSpot" data-x="0" data-y="3" data-occupied="false"></div>
-    <div class="dropSpot" data-x="0" data-y="0" data-occupied="false"></div>
-    <div class="dropSpot" data-x="0" data-y="0" data-occupied="false"></div>
-    <div class="dropSpot" data-x="0" data-y="0" data-occupied="false"></div>
-    <div class="dropSpot" data-x="0" data-y="0" data-occupied="false"></div>
-    <div class="dropSpot" data-x="0" data-y="0" data-occupied="false"></div>
-    <div class="dropSpot" data-x="0" data-y="0" data-occupied="false"></div>
-    <div class="dropSpot" data-x="0" data-y="0" data-occupied="false"></div>
-    <div class="dropSpot" data-x="0" data-y="0" data-occupied="false"></div>
-    <div class="dropSpot" data-x="0" data-y="0" data-occupied="false"></div>
-
-
-    <!-- Powtórz dla wszystkich pozostałych miejsc w gridzie -->
+  <div class="top">
+    <div class="left-container">
+      <div id="map"></div>
+      <button id="getLocation">Get Current Location</button>
+      <button id="saveButton">Save Raster Map</button>
+      <br>
+    </div>
+    <div class="right-container">
+      <div id="dropArea">
+        <!-- This creates a 4x4 grid of drop spots -->
+        <!-- <div class="dropSpot" data-position="0" data-occupied="false"></div>
+        <div class="dropSpot" data-position="1" data-occupied="false"></div>
+        <div class="dropSpot" data-position="2" data-occupied="false"></div>
+        <div class="dropSpot" data-position="3" data-occupied="false"></div>
+        <div class="dropSpot" data-position="4" data-occupied="false"></div>
+        <div class="dropSpot" data-position="5" data-occupied="false"></div>
+        <div class="dropSpot" data-position="6" data-occupied="false"></div>
+        <div class="dropSpot" data-position="7" data-occupied="false"></div>
+        <div class="dropSpot" data-position="8" data-occupied="false"></div>
+        <div class="dropSpot" data-position="9" data-occupied="false"></div>
+        <div class="dropSpot" data-position="10" data-occupied="false"></div>
+        <div class="dropSpot" data-position="11" data-occupied="false"></div>
+        <div class="dropSpot" data-position="12" data-occupied="false"></div>
+        <div class="dropSpot" data-position="13" data-occupied="false"></div>
+        <div class="dropSpot" data-position="14" data-occupied="false"></div>
+        <div class="dropSpot" data-position="15" data-occupied="false"></div> -->
+      </div>
+    </div>
   </div>
+  <div class="bottom">
+    <div id="puzzleTable"></div>
+  </div>
+
+
   <script>
-    const tileSize = 300 / 4;
+
     let pieces = [];
 
     let map = L.map('map').setView([53.430127, 14.564802], 18);
@@ -101,52 +134,108 @@
     let marker = L.marker([53.430127, 14.564802]).addTo(map);
     marker.bindPopup("<strong>Hello!</strong><br>This is a popup.");
 
-    const dropSpots = document.querySelectorAll(".dropSpot");
-    dropSpots.forEach((dropSpot, index) => {
-      const x = index % 4;
-      const y = Math.floor(index / 4);
-      dropSpot.setAttribute('data-x', x);
-      dropSpot.setAttribute('data-y', y);
-      dropSpot.setAttribute('data-occupied', 'false');
+    document.getElementById("getLocation").addEventListener("click", function (event) {
+      if (!navigator.geolocation) {
+        console.log("No geolocation.");
+      }
+
+      navigator.geolocation.getCurrentPosition(position => {
+        console.log(position);
+        let lat = position.coords.latitude;
+        let lon = position.coords.longitude;
+
+        map.setView([lat, lon]);
+      }, positionError => {
+        console.error(positionError);
+      });
     });
 
-    function splitImage() {
-      const rasterMap = document.getElementById("rasterMap");
-      const rasterContext = rasterMap.getContext("2d");
+    // const dropSpots = document.querySelectorAll(".dropSpot");
+    // dropSpots.forEach((dropSpot, index) => {
+    //   dropSpot.setAttribute('data-position', index);
+    //   dropSpot.setAttribute('data-occupied', 'false');
+    // });
+
+    function splitImage(hiddenCanvas) {
+      // Ask for notification permission
+      Notification.requestPermission();
+
+      const notification = new Notification('Puzzle completed!', {
+        body: 'Congratulations! You completed the puzzle successfully. (system notification)',
+      });
+
+      const dropArea = document.getElementById("dropArea");
+      // Remove border from dropArea
+      dropArea.style.border = 'none';
+
       const puzzleTable = document.getElementById("puzzleTable");
+      // Get size of dropspot element
+      const tileWidth = hiddenCanvas.width / 4;
+      const tileHeight = hiddenCanvas.height / 4;
+
+      puzzleTable.addEventListener("dragover", function (e) {
+        e.preventDefault(); // Musimy wywołać preventDefault, aby zezwolić na drop
+      });
       pieces = [];
+
+      puzzleTable.addEventListener("drop", function (e) {
+        e.preventDefault();
+        const draggedData = e.dataTransfer.getData("text/plain");
+        const draggedElement = pieces.find(p => p.canvas.dataset.position === draggedData).canvas;
+        const currentDropSpot = draggedElement.parentElement;
+
+        console.log('dragged back to table', draggedData)
+
+        if (currentDropSpot.classList.contains('dropSpot')) {
+          currentDropSpot.dataset.occupied = 'false';
+        }
+
+        // draggedElement.dataset.position = pieces.findIndex(p => p.canvas === draggedElement).toString();
+
+        puzzleTable.appendChild(draggedElement);
+        updateOccupiedAttributes();
+      });
+
+
 
       for (let x = 0; x < 4; x++) {
         for (let y = 0; y < 4; y++) {
           const pieceCanvas = document.createElement("canvas");
-          pieceCanvas.width = tileSize;
-          pieceCanvas.height = tileSize;
+          pieceCanvas.width = tileWidth;
+          pieceCanvas.height = tileHeight;
           const pieceContext = pieceCanvas.getContext("2d");
 
-          pieceContext.drawImage(rasterMap, x * tileSize, y * tileSize, tileSize, tileSize, 0, 0, tileSize, tileSize);
-          const pieceImage = document.createElement("img");
-          pieceImage.src = pieceCanvas.toDataURL();
-          pieceImage.draggable = true;
-          pieceImage.classList.add("puzzlePiece");
-          pieceImage.setAttribute('data-x', x);
-          pieceImage.setAttribute('data-y', y);
-          pieceImage.setAttribute('is-on-drop-area', 'false')
+          pieceContext.drawImage(hiddenCanvas, x * tileWidth, y * tileHeight, tileWidth, tileHeight, 0, 0, tileWidth, tileHeight);
 
-          pieces.push({ canvas: pieceCanvas, image: pieceImage, x, y, onBoard: false });
-          puzzleTable.appendChild(pieceImage);
+          // Dodajemy atrybuty do elementu canvas
+          pieceCanvas.draggable = true;
+          pieceCanvas.classList.add("puzzlePiece");
+          pieceCanvas.setAttribute('is-on-drop-area', 'false');
+          pieceCanvas.setAttribute('data-position', `${x * 4 + y}`);
+
+          // Przechowujemy element canvas zamiast obrazka
+          pieces.push({ canvas: pieceCanvas, onBoard: false, position: 4 * y + x });
+          puzzleTable.appendChild(pieceCanvas);
+
+          // Create dropSpot element and push it to dropArea as child
+          const dropSpot = document.createElement('div');
+          dropSpot.classList.add('dropSpot');
+          dropSpot.setAttribute('data-position', `${y * 4 + x}`);
+          dropSpot.setAttribute('data-occupied', 'false');
+          dropSpot.style.height = `${tileHeight - 0.5}px`;
+          dropSpot.style.width = `${tileWidth}px`;
+          document.getElementById('dropArea').appendChild(dropSpot);
         }
       }
       setUpDragAndDrop(); // Ustawiamy drag and drop po stworzeniu kawałków puzzle
     }
 
-
-
     function setUpDragAndDrop() {
       const dropArea = document.getElementById("dropArea");
 
       pieces.forEach(piece => {
-        piece.image.addEventListener("dragstart", function (e) {
-          e.dataTransfer.setData("text/plain", `${piece.x},${piece.y}`);
+        piece.canvas.addEventListener("dragstart", function (e) {
+          e.dataTransfer.setData("text/plain", piece.canvas.dataset.position);
         });
       });
 
@@ -156,48 +245,45 @@
 
       dropArea.addEventListener("drop", function (e) {
         e.preventDefault();
-        const target = e.target.closest(".dropSpot"); // Upewnij się, że targetem jest dropSpot
+        const target = e.target.closest(".dropSpot");
+        if (target && target.dataset.occupied === 'false') {
+          const draggedData = e.dataTransfer.getData("text/plain");
+          const piece = pieces.find(p => p.canvas.dataset.position === draggedData);
+          console.log(draggedData)
+          if (piece) {
+            const draggedElement = piece.canvas;
+            const previousDropSpot = draggedElement.parentElement;
+            if (previousDropSpot.classList.contains('dropSpot')) {
+              previousDropSpot.dataset.occupied = 'false'; // Ustawia poprzednie miejsce jako niezajęte
+            }
 
-        // Jeżeli nic nie przenosimy na miejsce, gdzie już jest obrazek, to nic nie rób
-        if (target && target.getElementsByTagName('img').length > 0) {
-          return;
+            // Przenosimy element do nowego miejsca
+            target.appendChild(draggedElement);
+
+            // Aktualizujemy atrybuty dataset
+            draggedElement.setAttribute('is-on-drop-area', 'true');
+
+            // Aktualizujemy atrybuty 'occupied' dla obu miejsc
+            updateOccupiedAttributes();
+
+            // Kontrola końca gry
+            checkCompletion();
+          } else {
+            console.error('Dragged piece not found in the pieces array!');
+          }
         }
-
-        const draggedData = e.dataTransfer.getData("text/plain").split(',');
-        const draggedImg = pieces.find(p => p.x === parseInt(draggedData[0]) && p.y === parseInt(draggedData[1])).image;
-        // Sprawdzamy czy przenoszony element jest occupied i czy miejsce na ktore go przesuwamy jest occupied
-
-        // Sprawdzamy czy element ktore przeciagamy jest juz occupied jezeli tak to znaczy ze
-        // przeciagamy element z planszy na inne miesjce
-        // wiec powinnismy stare occupied zmienic na false
-        if (draggedImg.getAttribute('is-on-drop-area') === 'true') {
-          const oldDropSpot = document.querySelector(`.dropSpot[data-x="${draggedImg.dataset.x}"][data-y="${draggedImg.dataset.y}"]`);
-          oldDropSpot.dataset.occupied = 'false';
-        }
-
-        // Przenosimy obrazek
-        if (target) {
-          target.appendChild(draggedImg);
-          draggedImg.dataset.x = target.dataset.x; // aktualizujemy pozycje x
-          draggedImg.dataset.y = target.dataset.y; // aktualizujemy pozycje y
-          draggedImg.setAttribute('is-on-drop-area', 'true'); // aktualizujemy atrybut is-on-drop-area
-          target.dataset.occupied = 'true'; // aktualizujemy atrybut occupied
-        }
-        updateOccupiedAttributes(); // Aktualizujemy atrybuty occupied
-        // Kontrola końca gry
-        checkCompletion();
       });
-
 
     }
 
     function updateOccupiedAttributes() {
-      const dropSpots = document.querySelectorAll('.dropSpot');
+      const dropSpots = document.querySelectorAll(".dropSpot");
       dropSpots.forEach(dropSpot => {
-        const hasImage = dropSpot.querySelector('img');
-        if (hasImage) {
+        if (dropSpot.childNodes.length > 0) {
+          dropSpot.dataset.occupied = 'true';
           dropSpot.style.border = 'none';
         } else {
+          dropSpot.dataset.occupied = 'false';
           dropSpot.style.border = '1px solid black';
         }
       });
@@ -205,23 +291,37 @@
 
     function checkCompletion() {
       const allPlacedCorrectly = pieces.every(piece => {
-        const dropSpot = document.querySelector(`.dropSpot[data-x="${piece.x}"][data-y="${piece.y}"]`);
-        return dropSpot && dropSpot.contains(piece.image);
+        const currentDropSpot = piece.canvas.parentElement;
+        if (currentDropSpot.classList.contains('dropSpot')) {
+          // Porównujemy data-position elementu puzzle z data-position miejsca upuszczenia
+          return piece.canvas.dataset.position === currentDropSpot.dataset.position;
+        }
+        return false;
       });
+
       if (allPlacedCorrectly) {
-        window.alert("Congratulations! Puzzle completed successfully.");
+        setTimeout(() => {
+          window.alert("Congratulations! Puzzle completed successfully.");
+          // Send system notification
+          const notification = new Notification('Puzzle completed!', {
+            body: 'Congratulations! You completed the puzzle successfully. (system notification)',
+          });
+        }, 1000)
       }
     }
 
     document.getElementById("saveButton").addEventListener("click", function () {
       leafletImage(map, function (err, canvas) {
         if (err) throw err;
-        let rasterMap = document.getElementById("rasterMap");
-        rasterMap.width = canvas.width; // Ustaw szerokość canvas na szerokość obrazu z mapy
-        rasterMap.height = canvas.height; // Ustaw wysokość canvas na wysokość obrazu z mapy
-        let rasterContext = rasterMap.getContext("2d");
-        rasterContext.drawImage(canvas, 0, 0); // Narysuj obraz na całym canvas
-        splitImage(); // Podziel obraz już po pełnym narysowaniu
+
+        // Tworzymy ukryty canvas do przetwarzania obrazu mapy
+        const hiddenCanvas = document.createElement('canvas');
+        hiddenCanvas.width = canvas.width;
+        hiddenCanvas.height = canvas.height;
+        const hiddenContext = hiddenCanvas.getContext('2d');
+        hiddenContext.drawImage(canvas, 0, 0); // Rysujemy na ukrytym canvas
+
+        splitImage(hiddenCanvas); // Przekazujemy ukryty canvas do funkcji splitImage
       });
     });
   </script>
