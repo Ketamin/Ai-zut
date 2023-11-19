@@ -13,7 +13,6 @@
 #dropArea {
   display: grid;
   gap: 0;
-  /* Ustawienie odstępu na 0 */
   justify-content: center;
   align-items: center;
 }
