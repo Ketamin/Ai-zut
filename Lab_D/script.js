@@ -53,9 +53,9 @@ const getWeatherFetch = async (location) => {
   )
 
   const weatherDataJson = await weatherData.json()
-
+  //github.com/Ketamin/Ai-zut/tree/lab-f
   // Draw weather
-  weatherDataJson.list.forEach((element) => {
+  https: weatherDataJson.list.forEach((element) => {
     drawWeather(
       element.dt,
       kelvinToCelsius(element.main.temp),
