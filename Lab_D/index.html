@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather App</title>
+
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    div {
+      text-align: center;
+    }
+
+    input {
+      width: 200px;
+      height: 30px;
+      font-size: 20px;
+    }
+
+    button {
+      width: 200px;
+      height: 30px;
+      font-size: 20px;
+    }
+
+    .currentWeather,
+    .forecast {
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      width: 40vw;
+      gap: 1rem
+    }
+
+    .weatherWrapper {
+      border: 1px solid black;
+      margin: 0 auto;
+      width: 100%;
+      box-shadow: 0 0 10px 0 black;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Weather App</h1>
+  <div>
+    <input type="text" id="city" name="city" class="location">
+    <button class="btn">Check</button>
+  </div>
+  <div class="weatherBox"></div>
+  <div class="currentWeather">
+    <h2>Current Weather</h2>
+  </div>
+  <div class="forecast">
+    <h2>Forecast</h2>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
